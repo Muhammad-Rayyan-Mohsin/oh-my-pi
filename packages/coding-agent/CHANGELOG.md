@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added opt-in `sessionBoundaryRoot`, `OMP_SESSION_BOUNDARY_ROOT`, and `--session-boundary-root` to reject foreign native journals before initial resume/fork reads, picker previews, SDK hydration, or interactive switches; canonical ancestor checks reject symlink escapes while preserving nested child journals.
+
 ## [18.13.1] - 2026-10-27
 
 ### Added

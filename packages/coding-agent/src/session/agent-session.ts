@@ -442,6 +442,7 @@ import {
 } from "./session-advisors";
 import type { SessionContext, TranscriptSessionContextOptions } from "./session-context";
 import { buildSessionContext, getRestorableSessionModels, isTranscriptEntry } from "./session-context";
+import { assertSessionBoundary } from "./session-boundary";
 import type { CacheWarmer, CacheWarmingMode, CacheWarmingStatus, PromptCacheEntry } from "./cache-warmer";
 import { isUserRequestEntry, transcriptEntryMessage, userTurnDraft } from "@oh-my-pi/pi-tui/chat/transcript-entry";
 import { anonymizeSessionTranscripts } from "./session-anonymizer";
@@ -12578,6 +12579,7 @@ export class AgentSession implements SettingsScope {
 			onModelFallback?: (warning: string) => void;
 		},
 	): Promise<boolean> {
+		assertSessionBoundary(sessionPath);
 		const explicitModel = options?.model;
 		if (explicitModel && !this.#modelRegistry.hasConfiguredAuth(explicitModel)) {
 			throw new Error(`No API key for ${explicitModel.provider}/${explicitModel.id}`);

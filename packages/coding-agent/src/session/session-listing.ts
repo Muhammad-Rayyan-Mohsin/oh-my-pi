@@ -8,6 +8,7 @@ import * as logger from "@oh-my-pi/pi-utils/logger";
 import { LRUCache } from "@oh-my-pi/pi-utils/lru";
 import { parseJsonlLenient } from "@oh-my-pi/pi-utils/stream";
 import { toError } from "@oh-my-pi/pi-utils/type-guards";
+import { assertSessionBoundary } from "./session-boundary";
 import { computeDefaultSessionDir } from "./session-paths";
 import { FileSessionStorage, type SessionStorage, type SessionStorageStat } from "./session-storage";
 import { lookupSessionTitle, recordSessionTitle } from "./session-index";
@@ -406,6 +407,7 @@ async function scanSessionFile(
 ): Promise<SessionInfo | undefined> {
 	let stat: SessionStorageStat;
 	try {
+		assertSessionBoundary(file);
 		stat = knownStat ?? storage.statSync(file);
 	} catch {
 		// Missing/unstatable file: no stat identity to cache under.
@@ -559,6 +561,7 @@ async function collectSessionsFromFiles(
 export async function recoverOrphanedBackups(sessionDir: string, storage: SessionStorage): Promise<void> {
 	let backups: string[];
 	try {
+		assertSessionBoundary(sessionDir);
 		backups = storage.listFilesSync(sessionDir, "*.bak");
 	} catch {
 		return;

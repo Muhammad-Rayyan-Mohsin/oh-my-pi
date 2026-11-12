@@ -13,6 +13,29 @@ Package-specific references:
 - [MCP server/tool authoring](../../docs/mcp-server-tool-authoring.md)
 - [DEVELOPMENT](./DEVELOPMENT.md)
 
+## Session journal boundaries
+
+Opt in with `sessionBoundaryRoot: /absolute/journal/root` in native configuration,
+`OMP_SESSION_BOUNDARY_ROOT=/absolute/journal/root`, or
+`--session-boundary-root /absolute/journal/root`. Precedence at launch is CLI/SDK
+option, then inherited environment, then configuration. The canonical root stays
+active for the process; changing projects or removing the environment variable
+cannot loosen it. Each isolated host must set its own root and session storage
+directory. This is a journal-loading policy, not a filesystem sandbox.
+
+Native resume, fork, picker previews, SDK opens and interactive switches reject
+outside-root journals before reading them, including symlinked files and existing
+ancestors of missing paths. Under an active boundary, literal `..` path components
+are rejected rather than normalized before symlink resolution. Same-root journals
+and nested artifact-child journals remain available. SDK hosts opening a manager before `createAgentSession` must
+first call the exported `configureSessionBoundaryRoot(root)` or inherit the
+environment variable; passing `sessionBoundaryRoot` to `createAgentSession` also
+rejects an already-open foreign manager before context construction.
+
+Launchers must check that `omp --help` advertises `--session-boundary-root` before
+writing isolation configuration or launching sessions: older versions report
+unknown flags only after some startup reads. See [local proof/build steps](./DEVELOPMENT.md#session-boundary-proof-without-a-native-rebuild).
+
 ## Memory backends
 
 The agent supports three mutually-exclusive memory backends, selected via the `memory.backend` setting (Settings → Memory tab, or `~/.omp/config.yml`):
